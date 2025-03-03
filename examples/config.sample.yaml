@@ -1,0 +1,8 @@
+port: 7280
+products:
+  - spring-framework:
+      host: localhost
+      version: "3.3"
+  - nodejs:
+      host: c3p0
+      version: "22"
