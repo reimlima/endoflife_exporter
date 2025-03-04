@@ -25,7 +25,7 @@ jobs:
       run: go mod tidy
 
     - name: Build
-      run: go build -v -o endoflife_exporter
+      run: go build -v -ldflags="-s -w" -o endoflife_exporter
 
     - name: Test
       run: go test -v ./...
