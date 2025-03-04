@@ -185,6 +185,10 @@ Example:
 endoflife_service{cycle="22.04",host="localhost",service="ubuntu",version="22.04"} 1.682899e+09
 ```
 
+## Grafana Dashboard
+
+This repository contains a Grafana dashboard to show collected metrics. Take a look at [grafana_dashboard](./grafana_dashboard/dashboard.md) documentation to know more.
+
 ## Development
 
 Requirements:

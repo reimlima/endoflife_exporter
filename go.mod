@@ -2,8 +2,6 @@ module github.com/reimlima/endoflife_exporter
 
 go 1.22.0
 
-replace github.com/reimlima/endoflife_exporter/internal => /Users/plastico/Library/CloudStorage/OneDrive-Pessoal/Profissional/Git/endoflife_exporter/internal
-
 require (
 	github.com/prometheus/client_golang v1.20.4
 	github.com/spf13/cobra v1.8.1

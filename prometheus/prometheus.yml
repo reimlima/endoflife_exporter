@@ -4,5 +4,6 @@ global:
 
 scrape_configs:
   - job_name: 'endoflife_exporter'
+    scrape_interval: 2m
     static_configs:
       - targets: ['endoflife_exporter:2112'] 
