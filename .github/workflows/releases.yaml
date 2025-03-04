@@ -2,74 +2,156 @@ name: Build, Test, and Release
 
 on:
   push:
+    branches: [ "main" ]
     tags:
       - 'v*.*.*'
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.16'
+        go-version: '1.21'
+        check-latest: true
 
     - name: Install dependencies
       run: go mod tidy
 
-    - name: Run tests
+    - name: Build
+      run: go build -v -o endoflife_exporter ./...
+
+    - name: Test
       run: go test -v ./...
 
     - name: Run test coverage
-      run: go test -coverprofile=coverage.out ./...
+      run: go test -v -coverprofile=coverage.out ./...
 
     - name: Upload coverage report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage.out
+        retention-days: 7
 
     - name: Run vulnerability scan
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'fs'
         severity: 'HIGH,CRITICAL'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
 
-    - name: Build binary
-      run: |
-        go build -o endoflife_exporter main.go
-
+    # Create release package only when a tag is pushed
     - name: Create tar.gz package
+      if: startsWith(github.ref, 'refs/tags/')
       run: |
-        tar -czvf endoflife_exporter_${{ github.ref_name }}.tar.gz endoflife_exporter
+        mkdir -p dist
+        cp endoflife_exporter dist/
+        cp README.md dist/
+        cp LICENSE dist/
+        cp endoflife_exporter.service dist/
+        cd dist && tar -czvf ../endoflife_exporter_${{ github.ref_name }}.tar.gz .
 
-    - name: Upload release asset
-      uses: actions/upload-artifact@v2
+    - name: Upload release artifact
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-artifact@v4
       with:
-        name: endoflife_exporter_${{ github.ref_name }}.tar.gz
+        name: release-artifact
         path: endoflife_exporter_${{ github.ref_name }}.tar.gz
+        retention-days: 7
 
-  release:
+  docker:
     needs: build
     runs-on: ubuntu-latest
-
+    if: github.event_name != 'pull_request'
     steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v2
+    - uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
       with:
-        name: endoflife_exporter_${{ github.ref_name }}.tar.gz
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: reimlima/endoflife_exporter
+        tags: |
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+          type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
+          type=semver,pattern={{major}}.{{minor}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
+        labels: |
+          org.opencontainers.image.title=End of Life Exporter
+          org.opencontainers.image.description=Prometheus exporter for end-of-life dates
+          org.opencontainers.image.source=https://github.com/reimlima/endoflife_exporter
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        platforms: linux/amd64,linux/arm64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  release:
+    needs: [build, docker]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+    - name: Download release artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: release-artifact
+
+    - name: Download coverage report
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-report
 
     - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
+        files: |
+          endoflife_exporter_${{ github.ref_name }}.tar.gz
+          coverage.out
         draft: false
         prerelease: false
-        files: endoflife_exporter_${{ github.ref_name }}.tar.gz
+        generate_release_notes: true
+        body: |
+          ## End of Life Exporter ${{ github.ref_name }}
+
+          ### Installation
+          ```bash
+          # Using the binary
+          wget https://github.com/reimlima/endoflife_exporter/releases/download/${{ github.ref_name }}/endoflife_exporter_${{ github.ref_name }}.tar.gz
+          tar xzf endoflife_exporter_${{ github.ref_name }}.tar.gz
+
+          # Using Docker
+          docker pull reimlima/endoflife_exporter:${{ github.ref_name }}
+          ```
+
+          ### What's Changed
+          For full changes, see the [CHANGELOG](https://github.com/reimlima/endoflife_exporter/blob/main/CHANGELOG.md)
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
