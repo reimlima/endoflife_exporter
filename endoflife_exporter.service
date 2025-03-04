@@ -1,0 +1,25 @@
+[Unit]
+Description=End of Life Prometheus Exporter
+Documentation=https://github.com/reimlima/endoflife_exporter
+After=network-online.target
+
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+ExecStart=/usr/local/bin/endoflife_exporter --config /etc/endoflife_exporter/config.yaml
+Restart=always
+RestartSec=5s
+
+# Security settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/endoflife_exporter
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target 

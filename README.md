@@ -4,6 +4,7 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/reimlima/endoflife_exporter)](https://golang.org/doc/devel/release.html)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Test Coverage](https://img.shields.io/badge/coverage-77%25-brightgreen.svg)](https://github.com/reimlima/endoflife_exporter/actions)
+[![Docker Pulls](https://img.shields.io/docker/pulls/reimlima/endoflife_exporter)](https://hub.docker.com/r/reimlima/endoflife_exporter)
 
 A Prometheus exporter that collects end-of-life dates for various products using the [endoflife.date](https://endoflife.date) API.
 
@@ -14,14 +15,24 @@ A Prometheus exporter that collects end-of-life dates for various products using
 - Prometheus metrics format
 - Support for various products (Ubuntu, NodeJS, etc.)
 - Flexible date handling for different date formats
+- Docker support
+- Systemd service support
 
 ## Installation
+
+### Using Go
 
 ```bash
 go install github.com/reimlima/endoflife_exporter@latest
 ```
 
-Or build from source:
+### Using Docker
+
+```bash
+docker pull reimlima/endoflife_exporter:latest
+```
+
+### Building from source
 
 ```bash
 git clone https://github.com/reimlima/endoflife_exporter.git
@@ -29,9 +40,45 @@ cd endoflife_exporter
 go build
 ```
 
+### Using systemd (Linux)
+
+1. Create the prometheus user and group:
+```bash
+sudo groupadd -r prometheus
+sudo useradd -r -g prometheus -s /sbin/nologin prometheus
+```
+
+2. Copy the binary to the system:
+```bash
+sudo cp endoflife_exporter /usr/local/bin/
+sudo chown prometheus:prometheus /usr/local/bin/endoflife_exporter
+```
+
+3. Create configuration directories:
+```bash
+sudo mkdir -p /etc/endoflife_exporter
+sudo mkdir -p /var/lib/endoflife_exporter
+sudo chown -R prometheus:prometheus /etc/endoflife_exporter
+sudo chown -R prometheus:prometheus /var/lib/endoflife_exporter
+```
+
+4. Copy the systemd service file:
+```bash
+sudo cp endoflife_exporter.service /etc/systemd/system/
+```
+
+5. Enable and start the service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable endoflife_exporter
+sudo systemctl start endoflife_exporter
+```
+
 ## Usage
 
-1. Create a configuration file (e.g., `config.yaml`):
+### Configuration
+
+Create a configuration file (e.g., `config.yaml`):
 
 ```yaml
 port: 2112
@@ -44,29 +91,65 @@ products:
       version: "16"
 ```
 
-2. Run the exporter:
+### Running with Go binary
 
 ```bash
 endoflife_exporter --config config.yaml
 ```
 
-Or with a custom config path:
+### Running with Docker
 
+1. Create a config directory and add your config file:
 ```bash
-endoflife_exporter -c /path/to/config.yaml
+mkdir -p config
+cp config.yaml config/
 ```
 
-## Configuration
+2. Run the container:
+```bash
+docker run -d \
+  --name endoflife_exporter \
+  -p 2112:2112 \
+  -v $(pwd)/config:/app/config \
+  reimlima/endoflife_exporter:latest
+```
 
-The configuration file supports the following options:
+Or using Docker Compose:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| port | int | The port number for the metrics server (e.g., 2112) |
-| products | array | List of products to monitor |
-| products[].name | string | Product name (e.g., ubuntu, nodejs) |
-| products[].host | string | Host where the product is running |
-| products[].version | string | Product version to monitor |
+```yaml
+version: '3'
+services:
+  endoflife_exporter:
+    image: reimlima/endoflife_exporter:latest
+    ports:
+      - "2112:2112"
+    volumes:
+      - ./config:/app/config
+    restart: unless-stopped
+```
+
+Save as `docker-compose.yml` and run:
+```bash
+docker-compose up -d
+```
+
+### Running with systemd
+
+1. Place your configuration file:
+```bash
+sudo cp config.yaml /etc/endoflife_exporter/
+sudo chown prometheus:prometheus /etc/endoflife_exporter/config.yaml
+```
+
+2. Start the service:
+```bash
+sudo systemctl start endoflife_exporter
+```
+
+3. Check the status:
+```bash
+sudo systemctl status endoflife_exporter
+```
 
 ## Metrics
 
@@ -91,6 +174,7 @@ endoflife_service{cycle="22.04",host="localhost",service="ubuntu",version="22.04
 Requirements:
 - Go 1.21 or higher
 - Make (optional)
+- Docker (optional)
 
 Running tests:
 ```bash
@@ -101,6 +185,11 @@ Running tests with coverage:
 ```bash
 go test -v -coverprofile=coverage.out ./...
 go tool cover -html=coverage.out
+```
+
+Building Docker image locally:
+```bash
+docker build -t endoflife_exporter .
 ```
 
 ## Contributing
