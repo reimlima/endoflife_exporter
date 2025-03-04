@@ -21,12 +21,14 @@ RUN apk add --no-cache ca-certificates
 # Copy the binary from builder
 COPY --from=builder /app/endoflife_exporter .
 
+# Create config directory and set permissions
+RUN mkdir -p /app/config && \
+    chown -R 1000:1000 /app
+
 # Create a non-root user
 RUN adduser -D -u 1000 exporter
 USER exporter
 
-# Create config directory
-RUN mkdir -p /app/config
 VOLUME /app/config
 
 EXPOSE 2112
