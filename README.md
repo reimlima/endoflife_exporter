@@ -114,24 +114,40 @@ docker run -d \
   reimlima/endoflife_exporter:latest
 ```
 
-Or using Docker Compose:
+### Running with Docker Compose
 
-```yaml
-version: '3'
-services:
-  endoflife_exporter:
-    image: reimlima/endoflife_exporter:latest
-    ports:
-      - "2112:2112"
-    volumes:
-      - ./config:/app/config
-    restart: unless-stopped
+The project includes a `docker-compose.yml` that sets up both the exporter and Prometheus for easy deployment:
+
+1. Create the necessary directories and files:
+```bash
+mkdir -p config prometheus
+cp config.yaml config/
 ```
 
-Save as `docker-compose.yml` and run:
+2. Create `prometheus/prometheus.yml`:
+```yaml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'endoflife_exporter'
+    static_configs:
+      - targets: ['endoflife_exporter:2112']
+```
+
+3. Start the services:
 ```bash
 docker-compose up -d
 ```
+
+This will start:
+- End of Life Exporter on port 2112 (metrics endpoint)
+- Prometheus on port 9090 (web interface)
+
+You can access:
+- Metrics: http://localhost:2112/metrics
+- Prometheus UI: http://localhost:9090
 
 ### Running with systemd
 
