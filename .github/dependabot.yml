@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Check Go module dependencies
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      monthly-batch:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
+
+  # Check GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      monthly-batch:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7

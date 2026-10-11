@@ -43,18 +43,21 @@ go build
 ### Using systemd (Linux)
 
 1. Create the prometheus user and group:
+   
 ```bash
 sudo groupadd -r prometheus
 sudo useradd -r -g prometheus -s /sbin/nologin prometheus
 ```
 
 2. Copy the binary to the system:
+
 ```bash
 sudo cp endoflife_exporter /usr/local/bin/
 sudo chown prometheus:prometheus /usr/local/bin/endoflife_exporter
 ```
 
 3. Create configuration directories:
+
 ```bash
 sudo mkdir -p /etc/endoflife_exporter
 sudo mkdir -p /var/lib/endoflife_exporter
@@ -63,11 +66,13 @@ sudo chown -R prometheus:prometheus /var/lib/endoflife_exporter
 ```
 
 4. Copy the systemd service file:
+
 ```bash
-sudo cp endoflife_exporter.service /etc/systemd/system/
+sudo cp systemd/endoflife_exporter.service /etc/systemd/system/
 ```
 
 5. Enable and start the service:
+
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable endoflife_exporter
@@ -99,13 +104,11 @@ endoflife_exporter --config config.yaml
 
 ### Running with Docker
 
-1. Create a config directory and add your config file:
-```bash
-mkdir -p config
-cp config.yaml config/
-```
-
+1. Edit the configuration file and add it to a config directory:
+   (e.g., `config/config.yaml`)
+  
 2. Run the container:
+
 ```bash
 docker run -d \
   --name endoflife_exporter \
@@ -116,15 +119,27 @@ docker run -d \
 
 ### Running with Docker Compose
 
-The project includes a `docker-compose.yml` that sets up both the exporter and Prometheus for easy deployment:
+The project includes a `docker-compose.yml` that sets up both the exporter and
+Prometheus for easy deployment:
 
-1. Create the necessary directories and files:
+1. Edit the necessary files `endoflife_exporter/config/config.yaml` and
+
 ```bash
-mkdir -p config prometheus
-cp config.yaml config/
+port: 2112
+products:
+  - ubuntu:
+      host: localhost
+      version: "22.04"
+  - nodejs:
+      host: localhost
+      version: "22"
+  - go:
+      host: localhost
+      version: "1.25"
 ```
 
-2. Create `prometheus/prometheus.yml`:
+`endoflife_exporter/prometheus/prometheus.yml`
+
 ```yaml
 global:
   scrape_interval: 15s
@@ -136,33 +151,41 @@ scrape_configs:
       - targets: ['endoflife_exporter:2112']
 ```
 
-3. Start the services:
+Start the services:
+
 ```bash
 docker-compose up -d
 ```
 
 This will start:
+
 - End of Life Exporter on port 2112 (metrics endpoint)
 - Prometheus on port 9090 (web interface)
+- Grafana on port 3000 (web interface)
 
 You can access:
+
 - Metrics: http://localhost:2112/metrics
 - Prometheus UI: http://localhost:9090
+- Grafana UI: http://localhost:3000
 
 ### Running with systemd
 
 1. Place your configuration file:
+
 ```bash
-sudo cp config.yaml /etc/endoflife_exporter/
+sudo cp config/config.yaml /etc/endoflife_exporter/
 sudo chown prometheus:prometheus /etc/endoflife_exporter/config.yaml
 ```
 
-2. Start the service:
+3. Start the service:
+
 ```bash
 sudo systemctl start endoflife_exporter
 ```
 
-3. Check the status:
+4. Check the status:
+
 ```bash
 sudo systemctl status endoflife_exporter
 ```
@@ -179,7 +202,8 @@ The exporter provides the following metrics:
     - `cycle`: Release cycle
 
 Example:
-```
+
+```promql
 # HELP endoflife_service End of life date for services
 # TYPE endoflife_service gauge
 endoflife_service{cycle="22.04",host="localhost",service="ubuntu",version="22.04"} 1.682899e+09
@@ -192,22 +216,26 @@ This repository contains a Grafana dashboard to show collected metrics. Take a l
 ## Development
 
 Requirements:
-- Go 1.21 or higher
+
+- Go 1.26 or higher
 - Make (optional)
 - Docker (optional)
 
 Running tests:
+
 ```bash
 go test -v ./...
 ```
 
 Running tests with coverage:
+
 ```bash
 go test -v -coverprofile=coverage.out ./...
 go tool cover -html=coverage.out
 ```
 
 Building Docker image locally:
+
 ```bash
 docker build -t endoflife_exporter .
 ```

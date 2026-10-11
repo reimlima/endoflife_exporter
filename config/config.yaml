@@ -1,0 +1,11 @@
+port: 2112
+products:
+  - ubuntu:
+      host: localhost
+      version: "22.04"
+  - nodejs:
+      host: localhost
+      version: "22"
+  - go:
+      host: localhost
+      version: "1.25"

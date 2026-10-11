@@ -10,7 +10,7 @@ Import the file `dashboard.json` to your Grafana instance and make any necessary
 
 In the `Queries` section, update the service name and the version you want to monitor in the label `cycle`:
 
-```
+```promql
 endoflife_service{service="prometheus", cycle="2.44"} * 1000
 ```
 

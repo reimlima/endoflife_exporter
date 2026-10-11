@@ -1,205 +1,329 @@
 {
-    "annotations": {
-      "list": [
-        {
-          "builtIn": 1,
-          "datasource": {
-            "type": "grafana",
-            "uid": "-- Grafana --"
-          },
-          "enable": true,
-          "hide": true,
-          "iconColor": "rgba(0, 211, 255, 1)",
-          "name": "Annotations & Alerts",
-          "target": {
-            "limit": 100,
-            "matchAny": false,
-            "tags": [],
-            "type": "dashboard"
-          },
-          "type": "dashboard"
-        }
-      ]
-    },
-    "editable": true,
-    "fiscalYearStartMonth": 0,
-    "graphTooltip": 0,
-    "id": 25,
-    "links": [],
-    "panels": [
+  "annotations": {
+    "list": [
       {
-        "datasource": {
-          "uid": "Prometheus"
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }] },
+          "unit": "dateTimeAsLocal"
         },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "orange",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "dateTimeAsLocal"
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "endoflife_service{service=\"ubuntu\", cycle=\"22.04\"} * 1000",
+          "instant": true,
+          "legendFormat": "{{service}} {{cycle}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Ubuntu 22.04 - End of Life date",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }] },
+          "unit": "dateTimeAsLocal"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "endoflife_service{service=\"nodejs\", cycle=\"22\"} * 1000",
+          "instant": true,
+          "legendFormat": "{{service}} {{cycle}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Node.js 22 - End of Life date",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }] },
+          "unit": "dateTimeAsLocal"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "endoflife_service{service=\"go\", cycle=\"1.25\", version=\"1.25\"} * 1000",
+          "instant": true,
+          "legendFormat": "{{service}} {{cycle}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Go 1.25 - End of Life date",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 90 },
+              { "color": "green", "value": 365 }
+            ]
           },
-          "overrides": []
+          "unit": "d"
         },
-        "gridPos": {
-          "h": 10,
-          "w": 6,
-          "x": 0,
-          "y": 0
-        },
-        "id": 1,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "percentChangeColorMode": "standard",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "/^ubuntu$/",
-            "values": false
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 8, "x": 0, "y": 6 },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "(endoflife_service{service=\"ubuntu\", cycle=\"22.04\"} - time()) / 86400",
+          "instant": true,
+          "legendFormat": "{{service}} {{cycle}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Ubuntu 22.04 - Days until EOL",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 90 },
+              { "color": "green", "value": 365 }
+            ]
           },
-          "showPercentChange": false,
-          "text": {
-            "titleSize": 60
-          },
-          "textMode": "value_and_name",
-          "wideLayout": false
+          "unit": "d"
         },
-        "pluginVersion": "11.3.1",
-        "targets": [
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 8, "x": 8, "y": 6 },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "(endoflife_service{service=\"nodejs\", cycle=\"22\"} - time()) / 86400",
+          "instant": true,
+          "legendFormat": "{{service}} {{cycle}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Node.js 22 - Days until EOL",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 90 },
+              { "color": "green", "value": 365 }
+            ]
+          },
+          "unit": "d"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 8, "x": 16, "y": 6 },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "(endoflife_service{service=\"go\", cycle=\"1.25\"} - time()) / 86400",
+          "instant": true,
+          "legendFormat": "{{service}} {{cycle}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Go 1.25 - Days until EOL",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "align": "auto", "cellOptions": { "type": "auto" } }
+        },
+        "overrides": [
           {
-            "editorMode": "code",
-            "expr": "endoflife_service{service=\"ubuntu\", cycle=\"24.04\"} * 1000",
-            "legendFormat": "{{service}}",
-            "range": true,
-            "refId": "A"
+            "matcher": { "id": "byName", "options": "EOL date" },
+            "properties": [{ "id": "unit", "value": "dateTimeAsLocal" }]
           }
-        ],
-        "title": "End of Life - Ubuntu 24.04",
-        "transformations": [
-          {
-            "id": "convertFieldType",
-            "options": {
-              "conversions": [
-                {
-                  "destinationType": "time",
-                  "targetField": "prometheus"
-                }
-              ],
-              "fields": {}
+        ]
+      },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 11 },
+      "id": 7,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "EOL date" }]
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "endoflife_service{service=~\"$service\", host=~\"$host\"} * 1000",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "All release cycles",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "job": true, "instance": true },
+            "indexByName": { "service": 0, "cycle": 1, "version": 2, "host": 3, "Value": 4 },
+            "renameByName": {
+              "service": "Service",
+              "cycle": "Cycle",
+              "version": "Monitored version",
+              "host": "Host",
+              "Value": "EOL date"
             }
           }
-        ],
-        "type": "stat"
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "refresh": "1h",
+  "schemaVersion": 40,
+  "tags": ["endoflife"],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": { "selected": true, "text": ["All"], "value": ["$__all"] },
+        "datasource": { "type": "prometheus", "uid": "Prometheus" },
+        "definition": "label_values(endoflife_service, service)",
+        "includeAll": true,
+        "multi": true,
+        "name": "service",
+        "query": { "query": "label_values(endoflife_service, service)", "refId": "PrometheusVariableQueryEditor-VariableQuery" },
+        "refresh": 2,
+        "type": "query"
       },
       {
-        "datasource": {
-          "uid": "Prometheus"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "dateTimeAsLocal"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 10,
-          "w": 6,
-          "x": 6,
-          "y": 0
-        },
-        "id": 2,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "percentChangeColorMode": "standard",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "/^prometheus$/",
-            "values": false
-          },
-          "showPercentChange": false,
-          "text": {
-            "titleSize": 60
-          },
-          "textMode": "value_and_name",
-          "wideLayout": false
-        },
-        "pluginVersion": "11.3.1",
-        "targets": [
-          {
-            "editorMode": "code",
-            "expr": "endoflife_service{service=\"prometheus\", cycle=\"2.44\"} * 1000",
-            "legendFormat": "{{service}}",
-            "range": true,
-            "refId": "A"
-          }
-        ],
-        "title": "End of Life - Prometheus 2.44",
-        "transformations": [
-          {
-            "id": "convertFieldType",
-            "options": {
-              "conversions": [
-                {
-                  "destinationType": "time",
-                  "targetField": "prometheus"
-                }
-              ],
-              "fields": {}
-            }
-          }
-        ],
-        "type": "stat"
+        "allValue": ".*",
+        "current": { "selected": true, "text": ["All"], "value": ["$__all"] },
+        "datasource": { "type": "prometheus", "uid": "Prometheus" },
+        "definition": "label_values(endoflife_service, host)",
+        "includeAll": true,
+        "multi": true,
+        "name": "host",
+        "query": { "query": "label_values(endoflife_service, host)", "refId": "PrometheusVariableQueryEditor-VariableQuery" },
+        "refresh": 2,
+        "type": "query"
       }
-    ],
-    "preload": false,
-    "schemaVersion": 40,
-    "tags": [],
-    "templating": {
-      "list": []
-    },
-    "time": {
-      "from": "now-24h",
-      "to": "now"
-    },
-    "timepicker": {
-      "refresh_intervals": [
-        "1d"
-      ]
-    },
-    "timezone": "utc",
-    "title": "End of Life",
-    "uid": "eeeucc87geuwwf",
-    "version": 8,
-    "weekStart": "sunday"
-  }
+    ]
+  },
+  "time": { "from": "now-24h", "to": "now" },
+  "timezone": "utc",
+  "title": "End of Life",
+  "uid": "eeeucc87geuwwf",
+  "version": 9
+}

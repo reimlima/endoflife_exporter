@@ -50,3 +50,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Ignore the endoflife_exporter binary
+endoflife_exporter

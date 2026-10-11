@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   endoflife_exporter:
-    image: reimlima/endoflife_exporter:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: endoflife_exporter
     ports:
       - "2112:2112"
@@ -16,7 +16,7 @@ services:
       retries: 3
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.13.4
     container_name: prometheus
     ports:
       - "9090:9090"
@@ -32,5 +32,19 @@ services:
     depends_on:
       - endoflife_exporter
 
+  grafana:
+    image: grafana/grafana:13.2-slim
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana_dashboard/dashboard.json:/var/lib/grafana/dashboards/dashboard.json:ro
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
 volumes:
-  prometheus_data: {} 
+  prometheus_data: {}
+  grafana_data: {}
